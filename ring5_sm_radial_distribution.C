@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-void ring5_sm_radial_distribution(){
+void ring5_sm_radial_distribution(Double_t offset){
 	gROOT->Reset();
 	gStyle->SetOptStat(0);
 	gStyle->SetTitleYOffset(1.3);
@@ -13,10 +13,10 @@ void ring5_sm_radial_distribution(){
 	gStyle->SetPadGridY(1);
 	TGaxis::SetMaxDigits(3);
 
-	Double_t ring5_rmin = 885;
-	Double_t ring5_rmax = 1045;
-	Double_t sm_rmin = 995;
-	Double_t sm_rmax = 1155;
+	Double_t ring5_rmin = 885+offset;
+	Double_t ring5_rmax = 1045+offset;
+	Double_t sm_rmin = 995+offset;
+	Double_t sm_rmax = 1155+offset;
 	int color[] = {1,2,4};
 	int colorQ[] = {3,6,7};
 	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";
@@ -39,8 +39,8 @@ void ring5_sm_radial_distribution(){
 	int x_max = 1500;
 	double bin_width = (x_max-x_min)/nbin;
 
-	h_main[ifile] = new TH1F(Form("h_main[%d]",ifile),Form("hit distribution on main det (rate*Asym weighted);hit_r (mm);rate*Asym (GHz*ppb)/%.1fmm",bin_width),nbin,x_min,x_max);
-	h_sm[ifile] = new TH1F(Form("h_sm[%d]",ifile),Form("hit distribution on sm det (rate*Asym weighted);hit_r (mm);rate*Asym (GHz*ppb)/%.1fmm",bin_width),nbin,x_min,x_max);
+	h_main[ifile] = new TH1F(Form("h_main[%d]",ifile),Form("hit distribution on main det (rate*Asym weighted), scan %.1f;hit_r (mm);rate*Asym (GHz*ppb)/%.1fmm",offset,bin_width),nbin,x_min,x_max);
+	h_sm[ifile] = new TH1F(Form("h_sm[%d]",ifile),Form("hit distribution on sm det (rate*Asym weighted), scan %.1f;hit_r (mm);rate*Asym (GHz*ppb)/%.1fmm",offset,bin_width),nbin,x_min,x_max);
 	h_main[ifile]->SetLineColor(color[ifile]);
 	h_sm[ifile]->SetLineColor(color[ifile]);
 	h_main[ifile]->Sumw2();
@@ -107,11 +107,10 @@ void ring5_sm_radial_distribution(){
 	double ring5_eff = ring5_ee_accept_int/ring5_ee_int*100.;
 	double ring5_bkg = ring5_ep_el_accept_int/ring5_ee_accept_int*100.;
 	latex.SetTextColor(1);
-	latex.DrawLatex(0.75,0.60,Form("Eff = %.1f %s",ring5_eff,"%"));
+	latex.DrawLatex(0.75,0.60,Form("Eff = %.2f %s",ring5_eff,"%"));
 	latex.SetTextColor(2);
-	latex.DrawLatex(0.75,0.55,Form("Bkg = %.1f %s",ring5_bkg,"%"));
-	cout<<"ring5 efficiency: "<<ring5_eff<<"%; ring5 bkg: "<<ring5_bkg<<"%"<<endl;
-	c1->SaveAs(Form("../temp/plot1.pdf"));
+	latex.DrawLatex(0.75,0.55,Form("Bkg = %.2f %s",ring5_bkg,"%"));
+	c1->SaveAs(Form("../temp/plot1_offset%.1f.pdf",offset));
 
 	TCanvas* c2 = new TCanvas("c2","sm");
 	gPad->SetLogy();
@@ -163,9 +162,14 @@ void ring5_sm_radial_distribution(){
 	double sm_eff = sm_ee_accept_int/sm_ee_int*100.;
 	double sm_bkg = sm_ep_el_accept_int/sm_ee_accept_int*100.;
 	latex.SetTextColor(1);
-	latex.DrawLatex(0.75,0.60,Form("Eff = %.1f %s",sm_eff,"%"));
+	latex.DrawLatex(0.75,0.60,Form("Eff = %.2f %s",sm_eff,"%"));
 	latex.SetTextColor(2);
-	latex.DrawLatex(0.75,0.55,Form("Bkg = %.1f %s",sm_bkg,"%"));
+	latex.DrawLatex(0.75,0.55,Form("Bkg = %.2f %s",sm_bkg,"%"));
+	cout<<"ring5 efficiency: "<<ring5_eff<<"%; ring5 bkg: "<<ring5_bkg<<"%"<<endl;
 	cout<<"sm efficiency: "<<sm_eff<<"%; sm bkg: "<<sm_bkg<<"%"<<endl;
-	c2->SaveAs(Form("../temp/plot2.pdf"));
+
+	ofstream outfile("../TextFiles/r_scan.csv",ios_base::app);
+	outfile<<ring5_rmin<<"\t"<<ring5_rmax<<"\t"<<ring5_eff<<"\t"<<ring5_bkg<<"\t"<<sm_rmin<<"\t"<<sm_rmax<<"\t"<<sm_eff<<"\t"<<sm_bkg<<endl;
+	outfile.close();
+	c2->SaveAs(Form("../temp/plot2_offset%.1f.pdf",offset));
 }

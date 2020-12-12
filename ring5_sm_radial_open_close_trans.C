@@ -1,4 +1,4 @@
-//This script is used for testing the ee radial distribution on det plane(rate weighted), open, close, and transition region.
+//This script is used to plot the ee, ep-el, and ep-inel radial distribution on det plane(rate weighted), open, close, and transition region.
 //It draws histograms directry using T-Draw.
 #include <string>
 #include <sstream>
@@ -35,8 +35,8 @@ void ring5_sm_radial_open_close_trans(){
 	
 	TString modphi = "fmod(fabs(hit.ph),2*3.14159/7.)";
 	double phiperdet = 3.14159/28.;//this is actually 2*pi/28. but I am looking for fabs(hit.ph).
-        TString phi_cCut = Form("(%s<%f||%s>7.*%f)",modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining open sector
-        TString phi_oCut = Form("(%s>3.*%f&&%s<5.*%f)",modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining close sector
+        TString phi_cCut = Form("(%s<%f||%s>7.*%f)",modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining close sector
+        TString phi_oCut = Form("(%s>3.*%f&&%s<5.*%f)",modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining open sector
         TString phi_tCut = Form("((%s>%f&&%s<3.*%f)||(%s>5.*%f&&%s<7.*%f))",modphi.Data(),phiperdet,modphi.Data(),phiperdet,modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining transition sector
 	TString weight;//define conditional weight inside the loop below
 

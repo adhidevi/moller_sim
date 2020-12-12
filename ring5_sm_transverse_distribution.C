@@ -30,13 +30,16 @@ void ring5_sm_transverse_distribution(){
 	TChain* T = new TChain("T");
 	T->Add(rootfile_dir+Form("%s",file[ifile].Data()));
 
-	int nbin = 500;
-	int x_min = 500;
-	int x_max = 1500;
+	int nbinx = 420;
+	int nbiny = 420;
+	int x_min = -1400;
+	int x_max = 1400;
+	int y_min = -1400;
+	int y_max = 1400;
 	double bin_width = (x_max-x_min)/nbin;
 
-	h_main_transverse[ifile] = new TH2F(Form("h_main_transverse[%d]",ifile), "transverse on main det;-x (mm);y (mm)", 420, -1400, 1400,420,-1400,1400);
-	h_sm_transverse[ifile] = new TH2F(Form("h_sm_transverse[%d]",ifile), "transverse on sm det;- x (mm);y (mm)", 420, -1400, 1400,420,-1400,1400);
+	h_main_transverse[ifile] = new TH2F(Form("h_main_transverse[%d]",ifile), "transverse on main det;-x (mm);y (mm)",nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_sm_transverse[ifile] = new TH2F(Form("h_sm_transverse[%d]",ifile), "transverse on sm det;- x (mm);y (mm)",nbinx,x_min,x_max,nbiny,y_min,y_max);
 	h_main_transverse[ifile]->SetMarkerColor(color[ifile]);
 	h_sm_transverse[ifile]->SetMarkerColor(color[ifile]);
 
