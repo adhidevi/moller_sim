@@ -18,7 +18,6 @@ void ring5_sm_transverse_distribution(){
 	Double_t sm_rmin = 995;
 	Double_t sm_rmax = 1155;
 	int color[] = {1,2,4};
-	int colorQ[] = {3,6,7};
 	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";
 	TString file[] = {"main_sm_moller/main_sm_moller*.root","main_sm_EP_elastic/main_sm_EP_elastic*.root","main_sm_EP_inelastic/main_sm_EP_inelastic*.root"};
 	int nfile = sizeof(file)/sizeof(*file);
@@ -36,7 +35,6 @@ void ring5_sm_transverse_distribution(){
 	int x_max = 1400;
 	int y_min = -1400;
 	int y_max = 1400;
-	double bin_width = (x_max-x_min)/nbin;
 
 	h_main_transverse[ifile] = new TH2F(Form("h_main_transverse[%d]",ifile), "transverse on main det;-x (mm);y (mm)",nbinx,x_min,x_max,nbiny,y_min,y_max);
 	h_sm_transverse[ifile] = new TH2F(Form("h_sm_transverse[%d]",ifile), "transverse on sm det;- x (mm);y (mm)",nbinx,x_min,x_max,nbiny,y_min,y_max);
@@ -48,9 +46,9 @@ void ring5_sm_transverse_distribution(){
 	}
 
 	TCanvas* c1 = new TCanvas("c1","main transverse",600,600);
-	h_main_transverse[0]->Draw();
+	h_main_transverse[2]->Draw();
 	h_main_transverse[1]->Draw("same");
-	h_main_transverse[2]->Draw("same");
+	h_main_transverse[0]->Draw("same");
 	TLegend* legMT = new TLegend(0.75,0.75,0.9,0.9);
 	legMT->SetBorderSize(0);
 	legMT->SetFillColor(0);
@@ -64,12 +62,26 @@ void ring5_sm_transverse_distribution(){
 	leg3[ifile]->SetTextColor(color[ifile]);
 	}
 	legMT->Draw();
-	c1->SaveAs(Form("../temp/plot3.pdf"));
+	TArc* mainIn = new TArc(0,0,ring5_rmin,0,360);
+	TArc* mainOut = new TArc(0,0,ring5_rmax,0,360);
+	mainIn->SetLineColor(6);
+	mainOut->SetLineColor(6);
+	mainIn->SetLineWidth(2);
+	mainIn->SetFillColor(0);
+	mainIn->SetFillStyle(0);
+	mainIn->SetLineStyle(7);
+	mainOut->SetLineWidth(2);
+	mainOut->SetFillColor(0);
+	mainOut->SetFillStyle(0);
+	mainOut->SetLineStyle(7);
+	mainIn->Draw();
+	mainOut->Draw();
+	c1->SaveAs(Form("../temp/plot1.pdf"));
 
 	TCanvas* c2 = new TCanvas("c2","sm transverse",600,600);
-	h_sm_transverse[0]->Draw();
+	h_sm_transverse[2]->Draw();
 	h_sm_transverse[1]->Draw("same");
-	h_sm_transverse[2]->Draw("same");
+	h_sm_transverse[0]->Draw("same");
 	TLegend* legST = new TLegend(0.75,0.75,0.9,0.9);
 	legST->SetBorderSize(0);
 	legST->SetFillColor(0);
@@ -83,7 +95,21 @@ void ring5_sm_transverse_distribution(){
 	leg4[ifile]->SetTextColor(color[ifile]);
 	}
 	legST->Draw();
-	c2->SaveAs(Form("../temp/plot4.pdf"));
-	gSystem->Exec(Form("pdfunite ../temp/* ../plots/ring5_showermax_hit_study.pdf"));
-	gSystem->Exec(Form("rm -rf ./temp/*"));
+	TArc* smIn = new TArc(0,0,sm_rmin,0,360);
+	TArc* smOut = new TArc(0,0,sm_rmax,0,360);
+	smIn->SetLineColor(6);
+	smOut->SetLineColor(6);
+	smIn->SetLineWidth(2);
+	smIn->SetFillColor(0);
+	smIn->SetFillStyle(0);
+	smIn->SetLineStyle(7);
+	smOut->SetLineWidth(2);
+	smOut->SetFillColor(0);
+	smOut->SetFillStyle(0);
+	smOut->SetLineStyle(7);
+	smIn->Draw();
+	smOut->Draw();
+	c2->SaveAs(Form("../temp/plot2.pdf"));
+	gSystem->Exec(Form("pdfunite ../temp/plot* ../plots/ring5_sm_transverse_distribution.pdf"));
+	gSystem->Exec(Form("rm -rf ../temp/plot*"));
 }

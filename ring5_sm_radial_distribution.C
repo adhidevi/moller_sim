@@ -4,8 +4,8 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-
-void ring5_sm_radial_distribution(Double_t offset){
+//offset is used to scan the radial position of the quartz
+void ring5_sm_radial_distribution(Double_t offset=0.0){
 	gROOT->Reset();
 	gStyle->SetOptStat(0);
 	gStyle->SetTitleYOffset(1.3);
@@ -54,122 +54,130 @@ void ring5_sm_radial_distribution(Double_t offset){
 	T->Draw(Form("hit.r>>h_sm[%d]",ifile),Form("%s*(%s)",weight.Data(),sm_Cut.Data()),"goff");
 	}
 
-	TCanvas* c1 = new TCanvas("c1","Main");
-	gPad->SetLogy();
-	h_main[0]->Draw();
-	h_main[1]->Draw("same");
-	h_main[2]->Draw("same");
+	TString title[]={"Main","sm","Main hist","sm hist"};
+	int nc = sizeof(title)/sizeof(*title);
+	TCanvas* c[4];
 	TH1F* h_mainQ[nfile];
+	TH1F* h_smQ[nfile];
 	for(int ifile=0;ifile<nfile;ifile++){
 	h_mainQ[ifile] = (TH1F*)h_main[ifile]->Clone(Form("h_mainQ[%d]",ifile));
 	h_mainQ[ifile]->GetXaxis()->SetRangeUser(ring5_rmin,ring5_rmax);
 	h_mainQ[ifile]->SetLineColor(colorQ[ifile]);
-	h_mainQ[ifile]->Draw("same");
+	h_smQ[ifile] = (TH1F*)h_sm[ifile]->Clone(Form("h_smQ[%d]",ifile));
+	h_smQ[ifile]->GetXaxis()->SetRangeUser(sm_rmin,sm_rmax);
+	h_smQ[ifile]->SetLineColor(colorQ[ifile]);
 	}
-	TLegend* legM = new TLegend(0.73,0.65,0.9,0.9);
-	legM->SetBorderSize(0);
-	legM->SetFillColor(0);
-	legM->SetFillStyle(0);
+	for(int ic=0;ic<nc;ic++){
+	c[ic] = new TCanvas(Form("c[%d]",ic),Form("%s",title[ic].Data()));
+	gPad->SetLogy();
+	if(ic==0){
+	h_main[0]->Draw();
+	h_main[1]->Draw("same");
+	h_main[2]->Draw("same");
+	h_mainQ[0]->Draw("same");
+	h_mainQ[1]->Draw("same");
+	h_mainQ[2]->Draw("same");
+	}
+	if(ic==1){
+	h_sm[0]->Draw();
+	h_sm[1]->Draw("same");
+	h_sm[2]->Draw("same");
+	h_smQ[0]->Draw("same");
+	h_smQ[1]->Draw("same");
+	h_smQ[2]->Draw("same");
+	}
+	if(ic==2){
+	h_main[0]->Draw("hist");
+	h_main[1]->Draw("hist same");
+	h_main[2]->Draw("hist same");
+	h_mainQ[0]->Draw("hist same");
+	h_mainQ[1]->Draw("hist same");
+	h_mainQ[2]->Draw("hist same");
+	}
+	if(ic==3){
+	h_sm[0]->Draw("hist");
+	h_sm[1]->Draw("hist same");
+	h_sm[2]->Draw("hist same");
+	h_smQ[0]->Draw("hist same");
+	h_smQ[1]->Draw("hist same");
+	h_smQ[2]->Draw("hist same");
+	}
+	
+	TLegend* leg = new TLegend(0.73,0.65,0.9,0.9);
+	leg->SetBorderSize(0);
+	leg->SetFillColor(0);
+	leg->SetFillStyle(0);
 	TLegendEntry* leg1[6];
-	leg1[0] = legM->AddEntry(h_main[0],"ee","le");
-	leg1[1] = legM->AddEntry(h_main[1],"ep_el","le");
-	leg1[2] = legM->AddEntry(h_main[2],"ep_inel","le");
-	leg1[3] = legM->AddEntry(h_mainQ[0],"eeQ","le");
-	leg1[4] = legM->AddEntry(h_mainQ[1],"ep_elQ","le");
-	leg1[5] = legM->AddEntry(h_mainQ[2],"ep_inelQ","le");
-	legM->SetTextSize(0.05);
+	if(title[ic].Contains("Main")){
+	leg1[0] = leg->AddEntry(h_main[0],"ee","le");
+	leg1[1] = leg->AddEntry(h_main[1],"ep_el","le");
+	leg1[2] = leg->AddEntry(h_main[2],"ep_inel","le");
+	leg1[3] = leg->AddEntry(h_mainQ[0],"eeQ","le");
+	leg1[4] = leg->AddEntry(h_mainQ[1],"ep_elQ","le");
+	leg1[5] = leg->AddEntry(h_mainQ[2],"ep_inelQ","le");
+	}
+	if(title[ic].Contains("sm")){
+	leg1[0] = leg->AddEntry(h_sm[0],"ee","le");
+	leg1[1] = leg->AddEntry(h_sm[1],"ep_el","le");
+	leg1[2] = leg->AddEntry(h_sm[2],"ep_inel","le");
+	leg1[3] = leg->AddEntry(h_smQ[0],"eeQ","le");
+	leg1[4] = leg->AddEntry(h_smQ[1],"ep_elQ","le");
+	leg1[5] = leg->AddEntry(h_smQ[2],"ep_inelQ","le");
+	}
+	leg->SetTextSize(0.05);
 	for(int ifile;ifile<nfile;ifile++){
 	leg1[ifile]->SetTextColor(color[ifile]);
 	leg1[ifile+3]->SetTextColor(colorQ[ifile]);
 	}
-	legM->Draw();
+	leg->Draw();
 	TLine* line[2];
-	line[0] = new TLine(ring5_rmin,0.0,ring5_rmin,h_main[0]->GetMaximum());
-	line[1] = new TLine(ring5_rmax,0.0,ring5_rmax,h_main[0]->GetMaximum());	
-	line[0]->SetLineWidth(2);
-	line[1]->SetLineWidth(2);
-	line[0]->SetLineColor(kRed-2);
-	line[1]->SetLineColor(kRed-2);
-	line[0]->Draw();
-	line[1]->Draw();
-	TArrow* hlineM = new TArrow(ring5_rmin,0.2,ring5_rmax,0.2,0.02,"<|>");
-	hlineM->SetLineWidth(2);
-	hlineM->SetLineColor(kRed-2);
-	hlineM->Draw();
+	TArrow* hline;
 	TLatex latex;
 	latex.SetNDC();
 	latex.SetTextSize(0.04);
 	latex.SetTextColor(kRed-2);
+	c[ic]->Modified();
+	c[ic]->Update();
+	if(title[ic].Contains("Main")){
 	latex.DrawLatex(0.43,0.2,Form("#splitline{%.0f mm}{quartz}",ring5_rmax-ring5_rmin));
-	double ring5_ee_int = h_main[0]->Integral();
-	double ring5_ee_accept_int = h_main[0]->Integral(h_main[0]->FindBin(ring5_rmin),h_main[0]->FindBin(ring5_rmax));
-	double ring5_ep_el_accept_int = h_main[1]->Integral(h_main[1]->FindBin(ring5_rmin),h_main[1]->FindBin(ring5_rmax));
-	double ring5_eff = ring5_ee_accept_int/ring5_ee_int*100.;
-	double ring5_bkg = ring5_ep_el_accept_int/ring5_ee_accept_int*100.;
-	latex.SetTextColor(1);
-	latex.DrawLatex(0.75,0.60,Form("Eff = %.2f %s",ring5_eff,"%"));
-	latex.SetTextColor(2);
-	latex.DrawLatex(0.75,0.55,Form("Bkg = %.2f %s",ring5_bkg,"%"));
-	c1->SaveAs(Form("../temp/plot1_offset%.1f.pdf",offset));
-
-	TCanvas* c2 = new TCanvas("c2","sm");
-	gPad->SetLogy();
-	h_sm[0]->Draw();
-	h_sm[1]->Draw("same");
-	h_sm[2]->Draw("same");
-	TH1F* h_smQ[nfile];
-	for(int ifile=0;ifile<nfile;ifile++){
-	h_smQ[ifile] = (TH1F*)h_sm[ifile]->Clone(Form("h_smQ[%d]",ifile));
-	h_smQ[ifile]->GetXaxis()->SetRangeUser(sm_rmin,sm_rmax);
-	h_smQ[ifile]->SetLineColor(colorQ[ifile]);
-	h_smQ[ifile]->Draw("same");
+	line[0] = new TLine(ring5_rmin,0.0,ring5_rmin,h_main[0]->GetMaximum());
+	line[1] = new TLine(ring5_rmax,0.0,ring5_rmax,h_main[0]->GetMaximum());
+	hline = new TArrow(ring5_rmin,0.2,ring5_rmax,0.2,0.02,"<|>");
 	}
-	TLegend* legS = new TLegend(0.73,0.65,0.9,0.9);
-	legS->SetBorderSize(0);
-	legS->SetFillColor(0);
-	legS->SetFillStyle(0);
-	TLegendEntry* leg2[nfile];;
-	leg2[0] = legS->AddEntry(h_sm[0],"ee","le");
-	leg2[1] = legS->AddEntry(h_sm[1],"ep_el","le");
-	leg2[2] = legS->AddEntry(h_sm[2],"ep_inel","le");
-	leg2[3] = legS->AddEntry(h_smQ[0],"eeQ","le");
-	leg2[4] = legS->AddEntry(h_smQ[1],"ep_elQ","le");
-	leg2[5] = legS->AddEntry(h_smQ[2],"ep_inelQ","le");
-	legS->SetTextSize(0.05);
-	for(int ifile=0;ifile<nfile;ifile++){
-	leg2[ifile]->SetTextColor(color[ifile]);
-	leg2[ifile+3]->SetTextColor(colorQ[ifile]);
-	}
-	legS->Draw();
-
+	if(title[ic].Contains("sm")){
+	latex.DrawLatex(0.53,0.2,Form("#splitline{%.0f mm}{quartz}",sm_rmax-sm_rmin));
 	line[0] = new TLine(sm_rmin,0.0,sm_rmin,h_sm[0]->GetMaximum());
-	line[1] = new TLine(sm_rmax,0.0,sm_rmax,h_sm[0]->GetMaximum());	
+	line[1] = new TLine(sm_rmax,0.0,sm_rmax,h_sm[0]->GetMaximum());
+	hline = new TArrow(sm_rmin,0.2,sm_rmax,0.2,0.02,"<|>");
+	}
 	line[0]->SetLineWidth(2);
 	line[1]->SetLineWidth(2);
 	line[0]->SetLineColor(kRed-2);
 	line[1]->SetLineColor(kRed-2);
 	line[0]->Draw();
 	line[1]->Draw();
-	TArrow* hlineS = new TArrow(sm_rmin,0.2,sm_rmax,0.2,0.02,"<|>");
-	hlineS->SetLineWidth(2);
-	hlineS->SetLineColor(kRed-2);
-	hlineS->Draw();
-	latex.SetTextColor(kRed-2);
-	latex.DrawLatex(0.52,0.20,Form("#splitline{%.0f mm}{quartz}",sm_rmax-sm_rmin));
-	double sm_ee_int = h_sm[0]->Integral();
-	double sm_ee_accept_int = h_sm[0]->Integral(h_sm[0]->FindBin(sm_rmin),h_sm[0]->FindBin(sm_rmax));
-	double sm_ep_el_accept_int = h_sm[1]->Integral(h_sm[1]->FindBin(sm_rmin),h_sm[1]->FindBin(sm_rmax));
-	double sm_eff = sm_ee_accept_int/sm_ee_int*100.;
-	double sm_bkg = sm_ep_el_accept_int/sm_ee_accept_int*100.;
+	hline->SetLineWidth(2);
+	hline->SetLineColor(kRed-2);
+	hline->Draw();
+	double ee_int, ee_accept_int, ep_el_accept_int, eff, bkg;
+	if(title[ic].Contains("Main")){
+	ee_int = h_main[0]->Integral();
+	ee_accept_int = h_main[0]->Integral(h_main[0]->FindBin(ring5_rmin),h_main[0]->FindBin(ring5_rmax));
+	ep_el_accept_int = h_main[1]->Integral(h_main[1]->FindBin(ring5_rmin),h_main[1]->FindBin(ring5_rmax));
+	}
+	if(title[ic].Contains("sm")){
+	ee_int = h_sm[0]->Integral();
+	ee_accept_int = h_sm[0]->Integral(h_sm[0]->FindBin(sm_rmin),h_sm[0]->FindBin(sm_rmax));
+	ep_el_accept_int = h_sm[1]->Integral(h_sm[1]->FindBin(sm_rmin),h_sm[1]->FindBin(sm_rmax));
+	}
+	eff = ee_accept_int/ee_int*100.;
+	bkg = ep_el_accept_int/ee_accept_int*100.;
 	latex.SetTextColor(1);
-	latex.DrawLatex(0.75,0.60,Form("Eff = %.2f %s",sm_eff,"%"));
+	latex.DrawLatex(0.75,0.60,Form("Eff = %.2f %s",eff,"%"));
 	latex.SetTextColor(2);
-	latex.DrawLatex(0.75,0.55,Form("Bkg = %.2f %s",sm_bkg,"%"));
-	cout<<"ring5 efficiency: "<<ring5_eff<<"%; ring5 bkg: "<<ring5_bkg<<"%"<<endl;
-	cout<<"sm efficiency: "<<sm_eff<<"%; sm bkg: "<<sm_bkg<<"%"<<endl;
-
-	ofstream outfile("../TextFiles/r_scan.csv",ios_base::app);
-	outfile<<ring5_rmin<<"\t"<<ring5_rmax<<"\t"<<ring5_eff<<"\t"<<ring5_bkg<<"\t"<<sm_rmin<<"\t"<<sm_rmax<<"\t"<<sm_eff<<"\t"<<sm_bkg<<endl;
-	outfile.close();
-	c2->SaveAs(Form("../temp/plot2_offset%.1f.pdf",offset));
+	latex.DrawLatex(0.75,0.55,Form("Bkg = %.2f %s",bkg,"%"));
+	c[ic]->SaveAs(Form("../temp/plot%d_offset%.1f.pdf",ic,offset));
+	}
+	gSystem->Exec(Form("pdfunite ../temp/plot*_offset%.1f.pdf ../plots/ring5_sm_radial_offset%.1f.pdf",offset,offset));
+	gSystem->Exec(Form("rm -rf ../temp/plot*_offset%.1f.pdf",offset));
 }

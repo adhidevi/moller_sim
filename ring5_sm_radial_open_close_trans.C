@@ -13,10 +13,10 @@ void ring5_sm_radial_open_close_trans(){
 	gStyle->SetPadGridY(1);
 	TGaxis::SetMaxDigits(3);
 
-	int color[] = {1,2,3};//colors for whole ring histograms
-	int coloro[] = {41,51,97};//colors for open sector histograms
-	int colorc[] = {4,6,7};//colors for closed sector histograms
-	int colort[] = {8,9,30};//colors for transition sector histograms
+	int color[] = {1,1,1};//colors for whole ring histograms
+	int coloro[] = {2,2,2};//colors for open sector histograms
+	int colorc[] = {4,4,4};//colors for closed sector histograms
+	int colort[] = {3,3,3};//colors for transition sector histograms
 	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";
 	TString file[] = {"main_sm_moller/main_sm_moller*.root","main_sm_EP_elastic/main_sm_EP_elastic*.root","main_sm_EP_inelastic/main_sm_EP_inelastic*.root"};
 	int nfile = sizeof(file)/sizeof(*file);
@@ -107,7 +107,7 @@ void ring5_sm_radial_open_close_trans(){
 	leg0[3]->SetTextColor(colort[ifile]);
 	legM0->Draw();
 
-	cM[ifile]->SaveAs(Form("../temp/plot%d.pdf",ifile+1));
+	cM[ifile]->SaveAs(Form("../temp/plot%d_radial.pdf",ifile+1));
 	}
 
 	TCanvas* cS[nfile];
@@ -134,9 +134,11 @@ void ring5_sm_radial_open_close_trans(){
 	leg3[3]->SetTextColor(colort[ifile]);
 	legM3->Draw();
 
-	cS[ifile]->SaveAs(Form("../temp/plot%d.pdf",ifile+4));
+	cS[ifile]->SaveAs(Form("../temp/plot%d_radial.pdf",ifile+4));
 	}
 
+	gSystem->Exec(Form("pdfunite ../temp/plot*_radial.pdf ../plots/ring5_sm_radial_open_close_trans_ee_ep-el_ep_inel.pdf"));
+	gSystem->Exec(Form("rm -rf ../temp/plot*_radial.pdf"));
 	for(int i=0;i<3;i++){
 	cout<<h_main[i]->GetEntries()<<"\t"<<h_main[i]->GetMean()<<"\t"<<h_main[i]->GetRMS()<<endl;
 	cout<<h_main_o[i]->GetEntries()<<"\t"<<h_main_o[i]->GetMean()<<"\t"<<h_main_o[i]->GetRMS()<<endl;

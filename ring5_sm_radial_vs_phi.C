@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-void ring5_sm_transverse_open_close_trans(){
+void ring5_sm_radial_vs_phi(){
 	gROOT->Reset();
 	gStyle->SetOptStat(0);
 	gStyle->SetTitleYOffset(1.3);
@@ -37,7 +37,7 @@ void ring5_sm_transverse_open_close_trans(){
 	TString smCut = "(hit.det==53&&hit.e>1000&&hit.r>500)";//default fut for det 53 (sm)
 	
 	TString modphi = "fmod(fabs(hit.ph),2*3.14159/7.)";
-	double phiperdet = 3.14159/28.;//this is actually 2*pi/28. but I am looking for fabs(hit.ph).
+	double phiperdet = 3.14159/28.;//this is actually 2*pi/28. but I am looking for fabs(180+hit.ph*57.295779513).
 	TString phi_cCut = Form("(%s<%f||%s>7.*%f)",modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining close sector
 	TString phi_oCut = Form("(%s>3.*%f&&%s<5.*%f)",modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining open sector
 	TString phi_tCut = Form("((%s>%f&&%s<3.*%f)||(%s>5.*%f&&%s<7.*%f))",modphi.Data(),phiperdet,modphi.Data(),phiperdet,modphi.Data(),phiperdet,modphi.Data(),phiperdet);//phi cut defining transition sector
@@ -49,19 +49,19 @@ void ring5_sm_transverse_open_close_trans(){
 	TChain* T = new TChain("T");
 	T->Add(rootfile_dir+Form("%s",file[ifile].Data()));
 
-	int nbinx = 420;
-	int nbiny = 420;
-	int x_min = -1400;
-	int x_max = 1400;
-	int y_min = -1400;
-	int y_max = 1400;
+	int nbinx = 500;
+	int nbiny = 500;
+	int x_min = 0;
+	int x_max = 360;
+	int y_min = 500;
+	int y_max = 1500;
 
-	h_main_tr_c[ifile] = new TH2F(Form("h_main_tr_c[%d]",ifile),Form("%s transverse on main det (rate weighted); -x (mm);y (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_main_tr_o[ifile] = new TH2F(Form("h_main_tr_o[%d]",ifile),Form("%s transverse on main det (rate weighted); -x (mm);y (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_main_tr_t[ifile] = new TH2F(Form("h_main_tr_t[%d]",ifile),Form("%s transverse on main det (rate weighted); -x (mm);y (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_sm_tr_c[ifile] = new TH2F(Form("h_sm_tr_c[%d]",ifile),Form("%s transverse on sm det (rate weighted); -x (mm);y (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_sm_tr_o[ifile] = new TH2F(Form("h_sm_tr_o[%d]",ifile),Form("%s transverse on sm det (rate weighted); -x (mm);y (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_sm_tr_t[ifile] = new TH2F(Form("h_sm_tr_t[%d]",ifile),Form("%s transverse on sm det (rate weighted); -x (mm);y (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_main_tr_c[ifile] = new TH2F(Form("h_main_tr_c[%d]",ifile),Form("%s transverse on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_main_tr_o[ifile] = new TH2F(Form("h_main_tr_o[%d]",ifile),Form("%s transverse on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_main_tr_t[ifile] = new TH2F(Form("h_main_tr_t[%d]",ifile),Form("%s transverse on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_sm_tr_c[ifile] = new TH2F(Form("h_sm_tr_c[%d]",ifile),Form("%s transverse on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_sm_tr_o[ifile] = new TH2F(Form("h_sm_tr_o[%d]",ifile),Form("%s transverse on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_sm_tr_t[ifile] = new TH2F(Form("h_sm_tr_t[%d]",ifile),Form("%s transverse on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
 
 	h_main_tr_c[ifile]->SetMarkerColor(colorc[ifile]);
 	h_main_tr_o[ifile]->SetMarkerColor(coloro[ifile]);
@@ -75,37 +75,29 @@ void ring5_sm_transverse_open_close_trans(){
 	else
 	weight = "1e-9*rate";
 	
-	T->Draw(Form("hit.y:hit.x>>h_main_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_oCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_main_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_cCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_main_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_tCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_sm_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_oCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_sm_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_cCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_sm_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_tCut.Data()),"goff");
+	T->Draw(Form("hit.r:180+hit.ph*57.295779513>>h_main_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_oCut.Data()),"goff");
+	T->Draw(Form("hit.r:180+hit.ph*57.295779513>>h_main_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_cCut.Data()),"goff");
+	T->Draw(Form("hit.r:180+hit.ph*57.295779513>>h_main_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_tCut.Data()),"goff");
+	T->Draw(Form("hit.r:180+hit.ph*57.295779513>>h_sm_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_oCut.Data()),"goff");
+	T->Draw(Form("hit.r:180+hit.ph*57.295779513>>h_sm_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_cCut.Data()),"goff");
+	T->Draw(Form("hit.r:180+hit.ph*57.295779513>>h_sm_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_tCut.Data()),"goff");
 	}
 	
 	TString label[] = {"open","close","transition"};
-	TArc* mainIn = new TArc(0,0,ring5_rmin,0,360);
-	TArc* mainOut = new TArc(0,0,ring5_rmax,0,360);
-	TArc* smIn = new TArc(0,0,sm_rmin,0,360);
-	TArc* smOut = new TArc(0,0,sm_rmax,0,360);
+	TLine* mainIn = new TLine(0,ring5_rmin,360,ring5_rmin);
+	TLine* mainOut = new TLine(0,ring5_rmax,360,ring5_rmax);
+	TLine* smIn = new TLine(0,sm_rmin,360,sm_rmin);
+	TLine* smOut = new TLine(0,sm_rmax,360,sm_rmax);
 	mainIn->SetLineColor(6);
-	mainIn->SetFillColor(0);
-	mainIn->SetFillStyle(0);
 	mainIn->SetLineWidth(2);
 	mainIn->SetLineStyle(7);
 	mainOut->SetLineColor(6);
-	mainOut->SetFillColor(0);
-	mainOut->SetFillStyle(0);
 	mainOut->SetLineWidth(2);
 	mainOut->SetLineStyle(7);
 	smIn->SetLineColor(6);
-	smIn->SetFillColor(0);
-	smIn->SetFillStyle(0);
 	smIn->SetLineWidth(2);
 	smIn->SetLineStyle(7);
 	smOut->SetLineColor(6);
-	smOut->SetFillColor(0);
-	smOut->SetFillStyle(0);
 	smOut->SetLineWidth(2);
 	smOut->SetLineStyle(7);
 	TCanvas* cM[nfile];
@@ -174,6 +166,6 @@ void ring5_sm_transverse_open_close_trans(){
 	smOut->Draw();
 	cScolz[ifile]->SaveAs(Form("../temp/sm_transverse_colz_%s.pdf",sim[ifile].Data()));
 	}
-	gSystem->Exec(Form("pdfunite ../temp/ring5_transverse* ../temp/sm_transverse* ../plots/ring5_sm_transverse_open_close_trans_ee_ep-el_ep-inel.pdf"));
+	gSystem->Exec(Form("pdfunite ../temp/ring5_transverse* ../temp/sm_transverse* ../plots/ring5_sm_radial_vs_phi_ee_ep-el_ep-inel.pdf"));
 	gSystem->Exec(Form("rm -rf ../temp/ring5_transverse* ../temp/sm_transverse*"));
 }
