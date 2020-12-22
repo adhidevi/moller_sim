@@ -18,7 +18,7 @@ void ring5_sm_transverse_open_close_trans(){
 	Double_t sm_rmin = 995;
 	Double_t sm_rmax = 1155;
 
-	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";//directory where the rootfiles exist
+	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/fieldmap_v2_50M/";//directory where the rootfiles exist
 	TString file[] = {"main_sm_moller/main_sm_moller*.root","main_sm_EP_elastic/main_sm_EP_elastic*.root","main_sm_EP_inelastic/main_sm_EP_inelastic*.root"};//list of root files.
 	int nfile = sizeof(file)/sizeof(*file);
 	
@@ -75,12 +75,12 @@ void ring5_sm_transverse_open_close_trans(){
 	else
 	weight = "1e-9*rate";
 	
-	T->Draw(Form("hit.y:hit.x>>h_main_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_oCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_main_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_cCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_main_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_tCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_sm_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_oCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_sm_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_cCut.Data()),"goff");
-	T->Draw(Form("hit.y:hit.x>>h_sm_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_tCut.Data()),"goff");
+	T->Draw(Form("hit.y:-1*hit.x>>h_main_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_oCut.Data()),"goff");
+	T->Draw(Form("hit.y:-1*hit.x>>h_main_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_cCut.Data()),"goff");
+	T->Draw(Form("hit.y:-1*hit.x>>h_main_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_tCut.Data()),"goff");
+	T->Draw(Form("hit.y:-1*hit.x>>h_sm_tr_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_oCut.Data()),"goff");
+	T->Draw(Form("hit.y:-1*hit.x>>h_sm_tr_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_cCut.Data()),"goff");
+	T->Draw(Form("hit.y:-1*hit.x>>h_sm_tr_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),smCut.Data(),phi_tCut.Data()),"goff");
 	}
 	
 	TString label[] = {"open","close","transition"};

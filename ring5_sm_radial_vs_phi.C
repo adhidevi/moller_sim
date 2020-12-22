@@ -1,4 +1,4 @@
-//This script is used to plot the transverse (y vs x) distribution on ring5 and showermax with proper cuts in closed, open and transition sectors.
+//This script is used to plot the radial vs phi (azimuthal) distribution on ring5 and showermax with proper cuts in closed, open and transition sectors.
 //
 #include <string>
 #include <sstream>
@@ -18,16 +18,16 @@ void ring5_sm_radial_vs_phi(){
 	Double_t sm_rmin = 995;
 	Double_t sm_rmax = 1155;
 
-	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";//directory where the rootfiles exist
+	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/fieldmap_v2_50M/";//directory where the rootfiles exist
 	TString file[] = {"main_sm_moller/main_sm_moller*.root","main_sm_EP_elastic/main_sm_EP_elastic*.root","main_sm_EP_inelastic/main_sm_EP_inelastic*.root"};//list of root files.
 	int nfile = sizeof(file)/sizeof(*file);
 	
-	TH2F* h_main_tr_c[nfile];//histogram for ring5 transverse distribution
-	TH2F* h_main_tr_o[nfile];//histogram for ring5 transverse distribution
-	TH2F* h_main_tr_t[nfile];//histogram for ring5 transverse distribution
-	TH2F* h_sm_tr_c[nfile];//histogram for showermax transverse distribution
-	TH2F* h_sm_tr_o[nfile];//histogram for showermax transverse distribution
-	TH2F* h_sm_tr_t[nfile];//histogram for showermax transverse distribution
+	TH2F* h_main_tr_c[nfile];//histogram for ring5 radial vs phi distribution
+	TH2F* h_main_tr_o[nfile];//histogram for ring5 radial vs phi distribution
+	TH2F* h_main_tr_t[nfile];//histogram for ring5 radial vs phi distribution
+	TH2F* h_sm_tr_c[nfile];//histogram for showermax radial vs phi distribution
+	TH2F* h_sm_tr_o[nfile];//histogram for showermax radial vs phi distribution
+	TH2F* h_sm_tr_t[nfile];//histogram for showermax radial vs phi distribution
 
 	int coloro[] = {2,2,2};
 	int colorc[] = {4,4,4};
@@ -56,12 +56,12 @@ void ring5_sm_radial_vs_phi(){
 	int y_min = 500;
 	int y_max = 1500;
 
-	h_main_tr_c[ifile] = new TH2F(Form("h_main_tr_c[%d]",ifile),Form("%s transverse on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_main_tr_o[ifile] = new TH2F(Form("h_main_tr_o[%d]",ifile),Form("%s transverse on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_main_tr_t[ifile] = new TH2F(Form("h_main_tr_t[%d]",ifile),Form("%s transverse on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_sm_tr_c[ifile] = new TH2F(Form("h_sm_tr_c[%d]",ifile),Form("%s transverse on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_sm_tr_o[ifile] = new TH2F(Form("h_sm_tr_o[%d]",ifile),Form("%s transverse on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
-	h_sm_tr_t[ifile] = new TH2F(Form("h_sm_tr_t[%d]",ifile),Form("%s transverse on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_main_tr_c[ifile] = new TH2F(Form("h_main_tr_c[%d]",ifile),Form("%s radial vs phi on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_main_tr_o[ifile] = new TH2F(Form("h_main_tr_o[%d]",ifile),Form("%s radial vs phi on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_main_tr_t[ifile] = new TH2F(Form("h_main_tr_t[%d]",ifile),Form("%s radial vs phi on main det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_sm_tr_c[ifile] = new TH2F(Form("h_sm_tr_c[%d]",ifile),Form("%s radial vs phi on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_sm_tr_o[ifile] = new TH2F(Form("h_sm_tr_o[%d]",ifile),Form("%s radial vs phi on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
+	h_sm_tr_t[ifile] = new TH2F(Form("h_sm_tr_t[%d]",ifile),Form("%s radial vs phi on sm det (rate weighted); #phi (deg);r (mm)",sim[ifile].Data()),nbinx,x_min,x_max,nbiny,y_min,y_max);
 
 	h_main_tr_c[ifile]->SetMarkerColor(colorc[ifile]);
 	h_main_tr_o[ifile]->SetMarkerColor(coloro[ifile]);

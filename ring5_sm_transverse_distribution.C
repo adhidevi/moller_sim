@@ -18,7 +18,7 @@ void ring5_sm_transverse_distribution(){
 	Double_t sm_rmin = 995;
 	Double_t sm_rmax = 1155;
 	int color[] = {1,2,4};
-	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";
+	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/fieldmap_v2_50M/";
 	TString file[] = {"main_sm_moller/main_sm_moller*.root","main_sm_EP_elastic/main_sm_EP_elastic*.root","main_sm_EP_inelastic/main_sm_EP_inelastic*.root"};
 	int nfile = sizeof(file)/sizeof(*file);
 

@@ -1,4 +1,4 @@
-//This script is used to plot the theta com (center of mass) distributions for ee, ep-el, and ep-inel.
+//This script is used to plot the theta com (center of mass) distributions for ee (moller).
 //
 #include <string>
 #include <sstream>
@@ -12,8 +12,8 @@ void theta_com_distribution(){
 	gStyle->SetPadGridX(1);
 	TGaxis::SetMaxDigits(3);
 	
-	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";//directory where the rootfiles exist
-	TString file[]  {"main_sm_moller/main_sm_moller*.root"};
+	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/fieldmap_v2_50M/";//directory where the rootfiles exist
+	TString file[] = {"main_sm_moller/main_sm_moller*.root"};
 	int nfile = sizeof(file)/sizeof(*file);
 	
 	TH1F* h_thcom[nfile];//histograms for total th_thcom distributions
@@ -38,9 +38,9 @@ void theta_com_distribution(){
 	TChain* T = new TChain("T");
 	T->Add(rootfile_dir+Form("%s",file[ifile].Data()));
 
-	int nbin = 180;
-	int x_min = 0;
-	int x_max = 180;
+	int nbin = 500;
+	double x_min = 0;
+	double x_max = 180;
 	double bin_width = (x_max-x_min)/nbin;
 	h_thcom[ifile] = new TH1F(Form("h_thcom[%d]",ifile),Form("%s #theta_{com} distributions (rate weighted);#theta_{com} (deg);rate (GHz)/%.1fdeg",sim[ifile].Data(),bin_width),nbin,x_min,x_max);
 	h_thcom_o[ifile] = new TH1F(Form("h_thcom_o[%d]",ifile),Form("%s #theta_{com} distributions (rate weighted);#theta_{com} (deg);rate (GHz)/%.1fdeg",sim[ifile].Data(),bin_width),nbin,x_min,x_max);
@@ -54,10 +54,10 @@ void theta_com_distribution(){
 	weight = "1e-9*rate/2.0";//moller rate needs to be divided by 2.0
 	else
 	weight = "1e-9*rate";
-	T->Draw(Form("ev.thcom*57.295779513>>h_thcom[%d]",ifile),Form("%s*(%s)",weight.Data(),ring5Cut.Data()),"goff");
-	T->Draw(Form("ev.thcom*57.295779513>>h_thcom_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_oCut.Data()),"goff");
-	T->Draw(Form("ev.thcom*57.295779513>>h_thcom_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_cCut.Data()),"goff");
-	T->Draw(Form("ev.thcom*57.295779513>>h_thcom_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_tCut.Data()),"goff");
+	T->Draw(Form("ev.thcom/deg>>h_thcom[%d]",ifile),Form("%s*(%s)",weight.Data(),ring5Cut.Data()),"goff");
+	T->Draw(Form("ev.thcom/deg>>h_thcom_o[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_oCut.Data()),"goff");
+	T->Draw(Form("ev.thcom/deg>>h_thcom_c[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_cCut.Data()),"goff");
+	T->Draw(Form("ev.thcom/deg>>h_thcom_t[%d]",ifile),Form("%s*(%s&&%s)",weight.Data(),ring5Cut.Data(),phi_tCut.Data()),"goff");
 	}
 	
 	TCanvas* c1[nfile];
@@ -118,6 +118,6 @@ void theta_com_distribution(){
 	leg->Draw();
 	c4[ifile]->SaveAs(Form("../temp/plot%d_thcom_logy_hist.pdf",ifile));
 	}
-	gSystem->Exec(Form("pdfunite ../temp/plot*_thcom*.pdf ../plots/thcom_ee_ep-el_ep_inel.pdf"));
+	gSystem->Exec(Form("pdfunite ../temp/plot*_thcom*.pdf ../plots/thcom_ee.pdf"));
 	gSystem->Exec(Form("rm -rf ../temp/plot*_thcom*.pdf"));
 }

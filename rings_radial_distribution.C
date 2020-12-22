@@ -17,7 +17,7 @@ void rings_radial_distribution(){
 	TString ring[] = {"ring 1","ring 2","ring 3","ring 4","ring 5","ring 6"};
 	int ringN = sizeof(ring)/sizeof(*ring);
 	int color[] = {1,2,4};
-	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/";
+	TString rootfile_dir = "/lustre/expphy/volatile/halla/parity/adhidevi/remoll_rootfiles/fieldmap_v2_50M/";
 	TString file[] = {"main_sm_moller/main_sm_moller*.root","main_sm_EP_elastic/main_sm_EP_elastic*.root","main_sm_EP_inelastic/main_sm_EP_inelastic*.root"};
 	int nfile = sizeof(file)/sizeof(*file);
 
